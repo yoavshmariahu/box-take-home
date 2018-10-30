@@ -3,7 +3,12 @@ import os
 def parse_location(location):
       # return coordinates given a string location e.g. e4 returns (4, 3)
       assert isinstance(location, str)
-      return (ord(location[0]) - ord('a'), int(location[1])-1)
+      return (int(location[1])-1, ord(location[0]) - ord('a'))
+
+def coor_to_location(coor):
+    if coor[0] < 0 or coor[0] > 4 or coor[1] < 0 or coor[1] > 4:
+        return None
+    return chr(coor[1] + ord('a')) + str(coor[0]+1)
 
 def _stringifySquare(sq):
 
