@@ -1,53 +1,36 @@
 class King:
-  def __init__(self, player):
-    if player == 'UPPER':
-      self.id = 'K'
-    else:
-      self.ed = 'k'
-  def get_moves(self):
+  def __init__(self):
+    self.id = 'K'
+  def get_moves(self, board):
     pass
+    
 
 class Rook:
-  def __init__(self, player):
-    if player == 'UPPER':
-      self.id = 'R'
-    else:
-      self.ed = 'r'
+  def __init__(self):
+    self.id = 'R'
   def get_moves(self):
     pass
 
 class Bishop:
-  def __init__(self, player):
-    if player == 'UPPER':
-      self.id = 'B'
-    else:
-      self.ed = 'b'
+  def __init__(self):
+    self.id = 'B'
   def get_moves(self):
     pass
 
 class GoldGeneral:
-  def __init__(self, player):
-    if player == 'UPPER':
-      self.id = 'G'
-    else:
-      self.ed = 'g'
+  def __init__(self):
+    self.id = 'G'
   def get_moves(self):
     pass
 
 class SilverGeneral:
-  def __init__(self, player):
-    if player == 'UPPER':
-      self.id = 'S'
-    else:
-      self.ed = 's'
+  def __init__(self):
+    self.id = 'S'
   def get_moves(self):
     pass
 
 class Pawn:
-  def __init__(self, player):
-    if player == 'UPPER':
+  def __init__(self):
       self.id = 'P'
-    else:
-      self.ed = 'p'
   def get_moves(self):
     pass

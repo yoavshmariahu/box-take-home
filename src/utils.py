@@ -1,5 +1,10 @@
 import os
 
+def parse_location(location):
+      # return coordinates given a string location e.g. e4 returns (4, 3)
+      assert isinstance(location, str)
+      return (ord(location[0]) - ord('a'), int(location[1])-1)
+
 def _stringifySquare(sq):
 
     if type(sq) is not str or len(sq) > 2:
