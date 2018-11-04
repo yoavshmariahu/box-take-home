@@ -1,5 +1,6 @@
 from utils import _stringifySquare, stringifyBoard, parseTestCase
 from player import Player
+from board import Board
 import sys
 import os
 

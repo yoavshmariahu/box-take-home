@@ -16,6 +16,8 @@ class Player:
         elem[1] = location
     
   def remove_piece(self, location, other=None):
+    if not loc_occupied(location, self.board):
+      raise Exception(self.name, 'illegal move')
     coor = parse_location(location)
     self.board[coor[0]][coor[1]] = ''
     if not other:

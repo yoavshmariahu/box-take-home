@@ -14,7 +14,7 @@ def loc_occupied(location, board):
 def coor_to_location(coor):
     if coor[0] < 0 or coor[0] > 4 or coor[1] < 0 or coor[1] > 4:
         return None
-    return chr(coor[1] + ord('a')) + str(coor[0]+1)
+    return chr(coor[0] + ord('a')) + str(coor[1]+1)
 
 def _stringifySquare(sq):
 
