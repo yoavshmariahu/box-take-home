@@ -6,12 +6,8 @@ class Player:
     self.name = name
     self.captures = list()
     self.pieces = list()
-    self.available_locations = {'a1', 'b1', 'c1', 'd1', 'e1',
-                                'a2', 'b2', 'c2', 'd2', 'e2',
-                                'a3', 'b3', 'c3', 'd3', 'e3',
-                                'a4', 'b4', 'c4', 'd4', 'e4',
-                                'a5', 'b5', 'c5', 'd5', 'e5'}
     self.board = board
+
   def insert_piece(self, piece, location):
     coor = parse_location(location)
     self.board[coor[0]][coor[1]] = piece.id
@@ -26,18 +22,38 @@ class Player:
       for i in range(len(self.pieces)):
         if self.pieces[i][1] == location:
           self.pieces[i][1] = None
-          return
+          return self.pieces[i][0]
     for i in range(len(other.pieces)):
       if other.pieces[i][1] == location:
         temp = other.pieces.pop(i)
         return temp[0]
     
-  def move_piece(self, other, piece, loc_from, loc_to):
+  def drop_piece(self, piece_id, location):
+    if loc_occupied(location, self.board):
+      raise Exception(self.name, 'illegal move')
+    if self.name == 'UPPER':
+      piece_id = piece_id.upper()
+    for i in range(len(self.captures)):
+      if self.captures[i].id == piece_id:
+        piece = self.captures.pop(i)
+        self.insert_piece(piece, location)
+        self.pieces.append([piece, location])
+
+  def move_piece(self, other, loc_from, loc_to):
+    # TODO: check if the move is legal
+    #       - loc_from must be occupied by one of self's pieces
+    #       - loc_to must not be occupied by one of self's pieces
+    #       - loc_to must be in the pieces range
+    piece = self.remove_piece(loc_from)
     if loc_occupied(loc_to, self.board):
       self.add_to_cap(self.remove_piece(loc_to, other))
-    self.remove_piece(loc_from)
     self.insert_piece(piece, loc_to)
   
+  def get_piece(self, location):
+    for elem in self.pieces:
+      if elem[1] == location:
+        return elem[0]
+
   def add_to_cap(self, piece):
     if self.name == 'lower':
       piece.id = piece.id.lower()
