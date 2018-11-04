@@ -7,13 +7,13 @@ import os
 assert len(sys.argv) > 1 and (sys.argv[1] == '-i' or sys.argv[1] == '-f'), 'Must specify game mode with appropriate flag:\n\t-i\t\tInteractive Mode\n\t-f <filePath>\tFile Mode'
 
 def interactive_mode():
-  lower_player = Player('lower')
+  board = [['','','','',''],['','','','',''],['','','','',''],['','','','',''],['','','','','']]
+  lower_player = Player('lower', board)
   lower_player.start_game_pieces()
-  upper_player = Player('UPPER')
+  upper_player = Player('UPPER', board)
   upper_player.start_game_pieces()
-  board = Board()
-  board.start_game()
-  print(stringifyBoard(board.places))
+  # board.start_game()
+  print(stringifyBoard(board))
 def file_mode(path):
   # open(path, 'r').readline()
   pass

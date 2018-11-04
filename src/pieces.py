@@ -10,7 +10,10 @@ class Piece:
 class King(Piece):
   def __init__(self, player, location='captured'):
     Piece.__init__(self, player, location)
-    self.id = 'K'
+    if player.name == 'lower':
+      self.id = 'k'
+    elif player.name == 'UPPER':
+      self.id = 'K'
   def get_moves(self):
     if self.location != 'captured':
       coor = parse_location(self.location)
@@ -25,16 +28,22 @@ class King(Piece):
 class Rook(Piece):
   def __init__(self, player, location='captured'):
     Piece.__init__(self, player, location)
-    self.id = 'R'
+    if player.name == 'lower':
+      self.id = 'r'
+    elif player.name == 'UPPER':
+      self.id = 'R'
   def get_moves(self):
     if self.location != 'captured':
       coor = parse_location(self.location)
-      return
+      pass
 
 class Bishop(Piece):
   def __init__(self, player, location='captured'):
     Piece.__init__(self, player, location)
-    self.id = 'B'
+    if player.name == 'lower':
+      self.id = 'b'
+    elif player.name == 'UPPER':
+      self.id = 'B'
   def get_moves(self):
     if self.location != 'captured':
       pass
@@ -42,20 +51,29 @@ class Bishop(Piece):
 class GoldGeneral(Piece):
   def __init__(self, player, location='captured'):
     Piece.__init__(self, player, location)
-    self.id = 'G'
+    if player.name == 'lower':
+      self.id = 'g'
+    elif player.name == 'UPPER':
+      self.id = 'G'
   def get_moves(self):
     if self.location != 'captured':
       pass
 class SilverGeneral(Piece):
   def __init__(self, player, location='captured'):
     Piece.__init__(self, player, location)
-    self.id = 'S'
+    if player.name == 'lower':
+      self.id = 's'
+    elif player.name == 'UPPER':
+      self.id = 'S'
   def get_moves(self):
     if self.location != 'captured':
       pass
 class Pawn(Piece):
   def __init__(self, player, location='captured'):
-      Piece.__init__(self, player, location)
+    Piece.__init__(self, player, location)
+    if player.name == 'lower':
+      self.id = 'p'
+    elif player.name == 'UPPER':
       self.id = 'P'
   def get_moves(self):
     if self.location != 'captured':
