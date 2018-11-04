@@ -1,6 +1,8 @@
 from pieces import King, Rook, Bishop, GoldGeneral, SilverGeneral, Pawn
 from utils import parse_location, loc_occupied
 
+# TODO: Check Detection, Checkmate Detection
+
 class Player:
   def __init__(self, name, board):
     self.name = name
@@ -47,6 +49,8 @@ class Player:
     #       - loc_to must not be occupied by one of self's pieces
     #       - loc_to must be in the pieces range
     piece = self.remove_piece(loc_from)
+    if not loc_to in piece.get_moves(loc_from, other.pieces) or self.get_piece(loc_to):
+      raise Exception(self.name, 'illegal move')
     if loc_occupied(loc_to, self.board):
       self.add_to_cap(self.remove_piece(loc_to, other))
     self.insert_piece(piece, loc_to)
@@ -55,6 +59,7 @@ class Player:
     for elem in self.pieces:
       if elem[1] == location:
         return elem[0]
+    return None
 
   def add_to_cap(self, piece):
     if self.name == 'lower':
