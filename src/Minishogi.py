@@ -1,6 +1,5 @@
 from utils import _stringifySquare, stringifyBoard, parseTestCase
 from player import Player
-from board import Board
 import sys
 import os
 
@@ -29,8 +28,9 @@ def interactive_mode():
   upper_player.start_game_pieces()
   upper_captures_str = ''
   lower_captures_str = ''
+  turns = 0
 
-  while True: # end game case or max turns completed
+  while turns < 200: # end game case or max turns completed
     print(stringifyBoard(board))
     print('Captures UPPER: {0}'.format(upper_captures_str))
     print('Captures lower: {0}'.format(lower_captures_str))
@@ -60,6 +60,9 @@ def interactive_mode():
     upper_captures_str = ''
     for piece in upper_player.captures:
       upper_captures_str += piece.id + ' '
+    
+    turns += 1
+  print('\nTie game. Too many moves.')
 def file_mode(path):
   # open(path, 'r').readline()
   pass
