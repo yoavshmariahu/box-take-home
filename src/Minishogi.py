@@ -11,66 +11,68 @@ def dispatch_turn(command, player, other, board):
   try:
     if command[0] == 'move':
       player.move_piece(other, command[1], command[2])
+      if len(command) > 3 and command[3] == 'promote':
+        player.promote(command[2])
+      else:
+        raise Exception(player.name, 'illegal move', 'Unidentified command')
     if command[0] == 'drop':
       player.drop_piece(command[1], command[2])
+    else:
+      raise Exception(player.name, 'illegal move', 'Unidentified command')
   except Exception as e:
     if e.args[1] == 'illegal move':
-      if e.args[0] == 'lower':
+      if e.args[0].islower():
         print('\nUPPER player wins.  Illegal move.')
-      elif e.args[0] == 'UPPER':
+      elif e.args[0].isupper():
         print('\nlower player wins.  Illegal move.')
       quit()
 
-def game_output(board, upper_captures_str, lower_captures_str):
+def game_state(board, upper_player, lower_player):
   # print board and captures
   print(stringifyBoard(board))
-  print('Captures UPPER: {0}'.format(upper_captures_str))
-  print('Captures lower: {0}'.format(lower_captures_str))
+  print('Captures UPPER: {0}'.format(upper_player.stringify_captures()))
+  print('Captures lower: {0}'.format(lower_player.stringify_captures()))
 
 def interactive_mode():
+  #     Two Player Mode
   #     Initialize all values and prepare to start game
   board = [['','','','',''],['','','','',''],['','','','',''],['','','','',''],['','','','','']]
   lower_player = Player('lower', board)
-  lower_player.start_game_pieces()
   upper_player = Player('UPPER', board)
+  lower_player.start_game_pieces()
   upper_player.start_game_pieces()
-  upper_captures_str = ''
-  lower_captures_str = ''
   turns = 0
 
   while turns < 200:
     #-----------START lower player's turn-----------
 
-    game_output(board, upper_captures_str, lower_captures_str) 
+    game_state(board, upper_player, lower_player) 
+    #   TODO: Check/Checkmate detection
     lower_move = input('\nlower> ')
     print('lower player action: {0}'.format(lower_move))
     lower_command = lower_move.split()
     #     ACTION: lower player
     dispatch_turn(lower_command, lower_player, upper_player, board)
     #     update lower player's capture string
-    lower_captures_str = ''
-    for piece in lower_player.captures:
-      lower_captures_str += piece.id + ' '
 
     #-----------END lower player's turn-----------
 
     #-----------START upper player's turn-----------
-    game_output(board, upper_captures_str, lower_captures_str) 
+    game_state(board, upper_player, lower_player) 
+    #   TODO: Check/Checkmate detection
     upper_move = input('\nUPPER> ')
     print('UPPER player action: {0}'.format(upper_move))
     upper_command = upper_move.split()
     #     ACTION: upper player
     dispatch_turn(upper_command, upper_player, lower_player, board)
-    
-    #     update upper player's capture string
-    upper_captures_str = ''
-    for piece in upper_player.captures:
-      upper_captures_str += piece.id + ' '
+
     #-----------END upper player's turn-----------
     turns += 1
   
   # end game for too many turns
   print('\nTie game. Too many moves.')
+
+
 def file_mode(path):
   # open(path, 'r').readline()
   pass

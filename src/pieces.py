@@ -7,10 +7,6 @@ class Piece:
   def __init__(self, player):
     self.player = player
     self.promoted = False
-  def promote(self):
-    self.promoted = True
-  def demote(self):
-    self.promoted = False
 
 class King(Piece):
   def __init__(self, player):
@@ -71,7 +67,10 @@ class Rook(Piece):
         break
       i += 1
     
-    return set(map(coor_to_location, coors))
+    rook_moves = set(map(coor_to_location, coors))
+    if self.promoted:
+      return rook_moves.union(King.get_moves(self, location, other_pieces))
+    return rook_moves
 
 
 class Bishop(Piece):
@@ -115,7 +114,11 @@ class Bishop(Piece):
       if (coor[0]+i, coor[1]+i) in other_locs:
         break
       i += 1
-    return set(map(coor_to_location, coors))
+
+    bish_moves = set(map(coor_to_location, coors))
+    if self.promoted:
+      return bish_moves.union(King.get_moves(self, location, other_pieces))
+    return bish_moves
 
 
 
@@ -148,6 +151,8 @@ class SilverGeneral(Piece):
       self.id = 'S'
   def get_moves(self, location, other_pieces):
     #     return set of available moves for SilverGeneral instance
+    if self.promoted:
+      return GoldGeneral.get_moves(self, location, other_pieces)
     coor = parse_location(location)
     coors = [(coor[0]-1, coor[1]-1), (coor[0]+1, coor[1]-1),
               (coor[0]-1, coor[1]+1), (coor[0]+1, coor[1]+1)]
@@ -169,6 +174,8 @@ class Pawn(Piece):
       self.id = 'P'
   def get_moves(self, location, other_pieces):
     #     return set of available moves for Pawn instance
+    if self.promoted:
+      return GoldGeneral.get_moves(self, location, other_pieces)
     coor = parse_location(location)
     coors = list()
     if self.id.islower() and coor[1] < 5:

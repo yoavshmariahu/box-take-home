@@ -19,7 +19,7 @@ class Player:
     
   def remove_piece(self, location, other=None):
     if not loc_occupied(location, self.board):
-      raise Exception(self.name, 'illegal move')
+      raise Exception(self.name, 'illegal move', 'Referenced location with no piece')
     coor = parse_location(location)
     self.board[coor[0]][coor[1]] = ''
     if not other:
@@ -34,26 +34,32 @@ class Player:
     
   def drop_piece(self, piece_id, location):
     if loc_occupied(location, self.board):
-      raise Exception(self.name, 'illegal move')
-    if self.name == 'UPPER':
-      piece_id = piece_id.upper()
+      raise Exception(self.name, 'illegal move', 'Dropped piece on an occupied location')
     for i in range(len(self.captures)):
       if self.captures[i].id == piece_id:
         piece = self.captures.pop(i)
+        if isinstance(piece, Pawn):
+          coor = parse_location(location)
+          if (self.name.islower() and coor[1] == 4) \
+              or (self.name.isupper() and coor[1] == 0):    # TODO: add case to check if immediate checkmate
+              raise Exception(self.name, 'illegal move', 'Dropped pawn in promotion zone or immediate checkmate')
+          for loc in self.board[coor[0]]:
+            if (loc == 'p' and self.name.islower()) or (loc == 'P' and self.name.isupper):
+              raise Exception(self.name, 'illegal move', 'Dropped pawn in same column as another unpromoted pawn')
         self.insert_piece(piece, location)
         self.pieces.append([piece, location])
 
-  def move_piece(self, other, loc_from, loc_to):
+  def move_piece(self, other, origin, destination):
     # TODO: check if the move is legal
-    #       - loc_from must be occupied by one of self's pieces
-    #       - loc_to must not be occupied by one of self's pieces
-    #       - loc_to must be in the pieces range
-    piece = self.remove_piece(loc_from)
-    if not loc_to in piece.get_moves(loc_from, other.pieces) or self.get_piece(loc_to):
-      raise Exception(self.name, 'illegal move')
-    if loc_occupied(loc_to, self.board):
-      self.add_to_cap(self.remove_piece(loc_to, other))
-    self.insert_piece(piece, loc_to)
+    #       - origin must be occupied by one of self's pieces
+    #       - destination must not be occupied by one of self's pieces
+    #       - destination must be in the pieces range
+    piece = self.remove_piece(origin)
+    if not destination in piece.get_moves(origin, other.pieces) or self.get_piece(destination):
+      raise Exception(self.name, 'illegal move', 'Destination not in range of piece')
+    if loc_occupied(destination, self.board):
+      self.add_to_cap(self.remove_piece(destination, other))
+    self.insert_piece(piece, destination)
   
   def get_piece(self, location):
     for elem in self.pieces:
@@ -62,12 +68,33 @@ class Player:
     return None
 
   def add_to_cap(self, piece):
+    if piece.promoted:
+      piece.id = piece.id[1]
+      piece.promoted = False
     if self.name == 'lower':
       piece.id = piece.id.lower()
     elif self.name == 'UPPER':
       piece.id = piece.id.upper()
     self.captures.append(piece)
   
+  def stringify_captures(self):
+    cap_str = ''
+    for piece in self.captures:
+      cap_str += piece.id + ' '
+    return cap_str
+
+  def promote(self, location):
+    piece = self.get_piece(location)
+    if isinstance(piece, King) or isinstance(piece, GoldGeneral):
+      raise Exception(piece.id, 'illegal move', 'Promoted unpromotable piece')
+    if not piece.promoted:
+      coor = parse_location(location)
+      if (piece.id.islower() and coor[1] == 4) \
+         or (piece.id.isupper() and coor[1] == 0):
+        piece.promoted = True
+        piece.id = '+' + piece.id
+        self.board[coor[0]][coor[1]] = piece.id
+
   def add_piece(self, piece, location=None):
     self.pieces[piece] = location
 
