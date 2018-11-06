@@ -7,6 +7,8 @@ class Piece:
   def __init__(self, player):
     self.player = player
     self.promoted = False
+  def __repr__(self):
+    return self.player.name + ' ' + self.id
 
 class King(Piece):
   def __init__(self, player):
@@ -32,11 +34,11 @@ class Rook(Piece):
       self.id = 'r'
     elif player.name == 'UPPER':
       self.id = 'R'
-  def get_moves(self, location, other_pieces):
+  def get_moves(self, location, other):
     #     return set of available moves for Rook instance
     coor = parse_location(location)
     coors = list()
-    other_locs = set(parse_location(elem[1]) for elem in other_pieces)
+    other_locs = set(parse_location(loc) for loc in other.pieces.values())
     i = 1
     # top
     while coor[1] + i < 5:
@@ -69,7 +71,7 @@ class Rook(Piece):
     
     rook_moves = set(map(coor_to_location, coors))
     if self.promoted:
-      return rook_moves.union(King.get_moves(self, location, other_pieces))
+      return rook_moves.union(King.get_moves(self, location, other))
     return rook_moves
 
 
@@ -80,10 +82,10 @@ class Bishop(Piece):
       self.id = 'b'
     elif player.name == 'UPPER':
       self.id = 'B'
-  def get_moves(self, location, other_pieces):
+  def get_moves(self, location, other):
     #     return set of available moves for Bishop instance
     coor = parse_location(location)
-    other_locs = set(parse_location(elem[1]) for elem in other_pieces)
+    other_locs = set(parse_location(loc) for loc in other.pieces.values())
     coors = list()
     i = 1
     # upper left
@@ -117,7 +119,7 @@ class Bishop(Piece):
 
     bish_moves = set(map(coor_to_location, coors))
     if self.promoted:
-      return bish_moves.union(King.get_moves(self, location, other_pieces))
+      return bish_moves.union(King.get_moves(self, location, other))
     return bish_moves
 
 
@@ -129,7 +131,7 @@ class GoldGeneral(Piece):
       self.id = 'g'
     elif player.name == 'UPPER':
       self.id = 'G'
-  def get_moves(self, location, other_pieces):
+  def get_moves(self, location, other):
     #     return set of available moves for GoldGeneral instance
     coor = parse_location(location)
     coors = [(coor[0], coor[1]-1),
@@ -149,10 +151,10 @@ class SilverGeneral(Piece):
       self.id = 's'
     elif player.name == 'UPPER':
       self.id = 'S'
-  def get_moves(self, location, other_pieces):
+  def get_moves(self, location, other):
     #     return set of available moves for SilverGeneral instance
     if self.promoted:
-      return GoldGeneral.get_moves(self, location, other_pieces)
+      return GoldGeneral.get_moves(self, location, other)
     coor = parse_location(location)
     coors = [(coor[0]-1, coor[1]-1), (coor[0]+1, coor[1]-1),
               (coor[0]-1, coor[1]+1), (coor[0]+1, coor[1]+1)]
@@ -172,10 +174,10 @@ class Pawn(Piece):
       self.id = 'p'
     elif player.name == 'UPPER':
       self.id = 'P'
-  def get_moves(self, location, other_pieces):
+  def get_moves(self, location, other):
     #     return set of available moves for Pawn instance
     if self.promoted:
-      return GoldGeneral.get_moves(self, location, other_pieces)
+      return GoldGeneral.get_moves(self, location, other)
     coor = parse_location(location)
     coors = list()
     if self.id.islower() and coor[1] < 5:

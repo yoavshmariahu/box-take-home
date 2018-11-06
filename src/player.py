@@ -7,30 +7,36 @@ class Player:
   def __init__(self, name, board):
     self.name = name
     self.captures = list()
-    self.pieces = list()
+    self.pieces = dict()
     self.board = board
 
   def insert_piece(self, piece, location):
+    self.pieces[piece] = location
     coor = parse_location(location)
     self.board[coor[0]][coor[1]] = piece.id
-    for elem in self.pieces:
-      if elem[0] is piece:
-        elem[1] = location
-    
-  def remove_piece(self, location, other=None):
+
+  def remove_piece(self, location):
     if not loc_occupied(location, self.board):
       raise Exception(self.name, 'illegal move', 'Referenced location with no piece')
     coor = parse_location(location)
     self.board[coor[0]][coor[1]] = ''
-    if not other:
-      for i in range(len(self.pieces)):
-        if self.pieces[i][1] == location:
-          self.pieces[i][1] = None
-          return self.pieces[i][0]
-    for i in range(len(other.pieces)):
-      if other.pieces[i][1] == location:
-        temp = other.pieces.pop(i)
-        return temp[0]
+    #     moving a player's own piece
+    for piece in self.pieces:
+      if self.pieces[piece] == location:
+        self.pieces[piece] = None
+        return piece
+
+  def jump_piece(self, location, other):
+      # for i in range(len(self.pieces)):
+      #   if self.pieces[i][1] == location:
+      #     self.pieces[i][1] = None
+      #     return self.pieces[i][0]
+    #     removing other player's piece
+    for piece in other.pieces:
+      if other.pieces[piece] == location:
+        other.pieces.pop(piece)
+        self.add_to_cap(piece)
+        return
     
   def drop_piece(self, piece_id, location):
     if loc_occupied(location, self.board):
@@ -47,7 +53,6 @@ class Player:
             if (loc == 'p' and self.name.islower()) or (loc == 'P' and self.name.isupper):
               raise Exception(self.name, 'illegal move', 'Dropped pawn in same column as another unpromoted pawn')
         self.insert_piece(piece, location)
-        self.pieces.append([piece, location])
 
   def move_piece(self, other, origin, destination):
     # TODO: check if the move is legal
@@ -55,16 +60,16 @@ class Player:
     #       - destination must not be occupied by one of self's pieces
     #       - destination must be in the pieces range
     piece = self.remove_piece(origin)
-    if not destination in piece.get_moves(origin, other.pieces) or self.get_piece(destination):
+    if not destination in piece.get_moves(origin, other) or self.get_piece(destination):
       raise Exception(self.name, 'illegal move', 'Destination not in range of piece')
     if loc_occupied(destination, self.board):
-      self.add_to_cap(self.remove_piece(destination, other))
+      self.jump_piece(destination, other)
     self.insert_piece(piece, destination)
   
   def get_piece(self, location):
-    for elem in self.pieces:
-      if elem[1] == location:
-        return elem[0]
+    for piece in self.pieces:
+      if self.pieces[piece] == location:
+        return piece
     return None
 
   def add_to_cap(self, piece):
@@ -100,23 +105,20 @@ class Player:
 
   def start_game_pieces(self):
     if self.name == 'lower':
-      self.pieces = [
-        [King(self), 'a1'],
-        [Rook(self), 'e1'],
-        [Bishop(self), 'd1'],
-        [GoldGeneral(self), 'b1'],
-        [SilverGeneral(self), 'c1'],
-        [Pawn(self), 'a2']
-      ]
+      self.insert_piece(King(self), 'a1')
+      self.insert_piece(Rook(self), 'e1')
+      self.insert_piece(Bishop(self), 'd1')
+      self.insert_piece(GoldGeneral(self), 'b1')
+      self.insert_piece(SilverGeneral(self), 'c1')
+      self.insert_piece(Pawn(self), 'a2')
       
     elif self.name == 'UPPER':
-      self.pieces = [
-        [King(self), 'e5'],
-        [Rook(self), 'a5'],
-        [Bishop(self), 'b5'],
-        [GoldGeneral(self), 'd5'],
-        [SilverGeneral(self), 'c5'],
-        [Pawn(self), 'e4']
-      ]
-    for piece in self.pieces:
-      self.insert_piece(piece[0], piece[1])
+      self.insert_piece(King(self), 'e5')
+      self.insert_piece(Rook(self), 'a5')
+      self.insert_piece(Bishop(self), 'b5')
+      self.insert_piece(GoldGeneral(self), 'd5')
+      self.insert_piece(SilverGeneral(self), 'c5')
+      self.insert_piece(Pawn(self), 'e4')
+
+  def in_check(self, other):
+    pass

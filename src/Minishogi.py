@@ -13,9 +13,9 @@ def dispatch_turn(command, player, other, board):
       player.move_piece(other, command[1], command[2])
       if len(command) > 3 and command[3] == 'promote':
         player.promote(command[2])
-      else:
+      elif len(command) > 3:
         raise Exception(player.name, 'illegal move', 'Unidentified command')
-    if command[0] == 'drop':
+    elif command[0] == 'drop':
       player.drop_piece(command[1], command[2])
     else:
       raise Exception(player.name, 'illegal move', 'Unidentified command')
