@@ -1,1 +1,1 @@
-python ./src/Minishogi
+python3 ./src/Minishogi.py -f

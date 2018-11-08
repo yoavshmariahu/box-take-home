@@ -5,6 +5,15 @@ def parse_location(location):
       assert isinstance(location, str)
       return (ord(location[0]) - ord('a'), int(location[1])-1)
 
+def get_available_locations(board):
+    locs = list()
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            loc = coor_to_location((i, j))
+            if not loc_occupied(loc, board):
+                locs.append(loc)
+    return locs
+
 def loc_occupied(location, board):
     coor = parse_location(location)
     if board[coor[0]][coor[1]] == '':

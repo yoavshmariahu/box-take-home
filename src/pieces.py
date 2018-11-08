@@ -5,6 +5,7 @@ from functools import partial
 
 class Piece:
   def __init__(self, player):
+    self.id = None
     self.player = player
     self.promoted = False
   def __repr__(self):
@@ -17,7 +18,7 @@ class King(Piece):
       self.id = 'k'
     elif player.name == 'UPPER':
       self.id = 'K'
-  def get_moves(self, location, other_pieces):
+  def get_moves(self, location, other_pieces, pieces=None):
     #     return set of available moves for King instance
     coor = parse_location(location)
     coors = [(coor[0]-1, coor[1]-1), (coor[0], coor[1]-1), (coor[0]+1, coor[1]-1),
@@ -34,14 +35,19 @@ class Rook(Piece):
       self.id = 'r'
     elif player.name == 'UPPER':
       self.id = 'R'
-  def get_moves(self, location, other):
+  def get_moves(self, location, other_pieces, pieces=None):
     #     return set of available moves for Rook instance
+    if not pieces:
+      pieces = self.player.pieces
     coor = parse_location(location)
     coors = list()
-    other_locs = set(parse_location(loc) for loc in other.pieces.values())
+    other_locs = set(parse_location(loc) for loc in other_pieces.values() if loc)
+    self_locs = set(parse_location(loc) for loc in pieces.values() if loc)
     i = 1
     # top
     while coor[1] + i < 5:
+      if (coor[0], coor[1]+i) in self_locs:
+        break
       coors.append((coor[0], coor[1]+i))
       if (coor[0], coor[1]+i) in other_locs:
         break
@@ -50,6 +56,8 @@ class Rook(Piece):
     # bottom 
     i = 1
     while coor[1] - i >= 0:
+      if (coor[0], coor[1]-i) in self_locs:
+        break
       coors.append((coor[0] , coor[1]-i))
       if (coor[0], coor[1]-i) in other_locs:
         break
@@ -57,6 +65,8 @@ class Rook(Piece):
     # right
     i = 1
     while coor[0] + i < 5:
+      if (coor[0]+i, coor[1]) in self_locs:
+        break
       coors.append((coor[0]+i , coor[1]))
       if (coor[0]+i, coor[1]) in other_locs:
         break
@@ -64,6 +74,8 @@ class Rook(Piece):
     # left
     i = 1
     while coor[0] - i >= 0:
+      if (coor[0]-i, coor[1]) in self_locs:
+        break
       coors.append((coor[0]-i , coor[1]))
       if (coor[0]-i, coor[1]) in other_locs:
         break
@@ -71,7 +83,7 @@ class Rook(Piece):
     
     rook_moves = set(map(coor_to_location, coors))
     if self.promoted:
-      return rook_moves.union(King.get_moves(self, location, other))
+      return rook_moves.union(King.get_moves(self, location, other_pieces))
     return rook_moves
 
 
@@ -82,14 +94,19 @@ class Bishop(Piece):
       self.id = 'b'
     elif player.name == 'UPPER':
       self.id = 'B'
-  def get_moves(self, location, other):
+  def get_moves(self, location, other_pieces, pieces=None):
     #     return set of available moves for Bishop instance
+    if not pieces:
+      pieces = self.player.pieces
     coor = parse_location(location)
-    other_locs = set(parse_location(loc) for loc in other.pieces.values())
+    other_locs = set(parse_location(loc) for loc in other_pieces.values() if loc)
+    self_locs = set(parse_location(loc) for loc in pieces.values() if loc)
     coors = list()
     i = 1
     # upper left
     while coor[0] - i >= 0 and coor[1] - i >= 0:
+      if (coor[0]-i, coor[1]-i) in self_locs:
+        break
       coors.append((coor[0]-i, coor[1]-i))
       if (coor[0]-i, coor[1]-i) in other_locs:
         break
@@ -98,6 +115,8 @@ class Bishop(Piece):
     #  bottom left
     i = 1
     while coor[0] - i >= 0 and coor[1] + i < 5:
+      if (coor[0]-i, coor[1]+i) in self_locs:
+        break
       coors.append((coor[0]-i , coor[1]+i))
       if (coor[0]-i, coor[1]+i) in other_locs:
         break
@@ -105,6 +124,8 @@ class Bishop(Piece):
     # upper right
     i = 1
     while coor[0] + i < 5 and coor[1] - i >= 0:
+      if (coor[0]+i, coor[1]-i) in self_locs:
+        break
       coors.append((coor[0]+i , coor[1]-i))
       if (coor[0]+i, coor[1]-i) in other_locs:
         break
@@ -112,6 +133,8 @@ class Bishop(Piece):
     # bottom right
     i = 1
     while coor[0] + i < 5 and coor[1] + i < 5:
+      if (coor[0]+i, coor[1]+i) in self_locs:
+        break
       coors.append((coor[0]+i , coor[1]+i))
       if (coor[0]+i, coor[1]+i) in other_locs:
         break
@@ -119,7 +142,7 @@ class Bishop(Piece):
 
     bish_moves = set(map(coor_to_location, coors))
     if self.promoted:
-      return bish_moves.union(King.get_moves(self, location, other))
+      return bish_moves.union(King.get_moves(self, location, other_pieces))
     return bish_moves
 
 
@@ -131,7 +154,7 @@ class GoldGeneral(Piece):
       self.id = 'g'
     elif player.name == 'UPPER':
       self.id = 'G'
-  def get_moves(self, location, other):
+  def get_moves(self, location, other_pieces, pieces=None):
     #     return set of available moves for GoldGeneral instance
     coor = parse_location(location)
     coors = [(coor[0], coor[1]-1),
@@ -151,10 +174,10 @@ class SilverGeneral(Piece):
       self.id = 's'
     elif player.name == 'UPPER':
       self.id = 'S'
-  def get_moves(self, location, other):
+  def get_moves(self, location, other_pieces, pieces=None):
     #     return set of available moves for SilverGeneral instance
     if self.promoted:
-      return GoldGeneral.get_moves(self, location, other)
+      return GoldGeneral.get_moves(self, location, other_pieces)
     coor = parse_location(location)
     coors = [(coor[0]-1, coor[1]-1), (coor[0]+1, coor[1]-1),
               (coor[0]-1, coor[1]+1), (coor[0]+1, coor[1]+1)]
@@ -174,10 +197,10 @@ class Pawn(Piece):
       self.id = 'p'
     elif player.name == 'UPPER':
       self.id = 'P'
-  def get_moves(self, location, other):
+  def get_moves(self, location, other_pieces, pieces=None):
     #     return set of available moves for Pawn instance
     if self.promoted:
-      return GoldGeneral.get_moves(self, location, other)
+      return GoldGeneral.get_moves(self, location, other_pieces)
     coor = parse_location(location)
     coors = list()
     if self.id.islower() and coor[1] < 5:
