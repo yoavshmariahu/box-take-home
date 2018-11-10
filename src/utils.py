@@ -1,9 +1,9 @@
 import os    
 
 def parse_location(location):
-      # return coordinates given a string location e.g. e4 returns (4, 3)
-      assert isinstance(location, str)
-      return (ord(location[0]) - ord('a'), int(location[1])-1)
+    # return coordinates given a string location e.g. e4 returns (4, 3)
+    assert isinstance(location, str)
+    return (ord(location[0]) - ord('a'), int(location[1])-1)
 
 def get_available_locations(board):
     locs = list()
@@ -26,10 +26,8 @@ def coor_to_location(coor):
     return chr(coor[0] + ord('a')) + str(coor[1]+1)
 
 def _stringifySquare(sq):
-
     if type(sq) is not str or len(sq) > 2:
         raise ValueError('Board must be an array of strings like "", "P", or "+P"')
-
     if len(sq) == 0:
         return '__|'
     if len(sq) == 1:
@@ -39,19 +37,13 @@ def _stringifySquare(sq):
 
 
 def stringifyBoard(board):
-
     s = ''
-
     for row in range(len(board) - 1, -1, -1):
-        
         s += '' + str(row + 1) + ' |'
         for col in range(0, len(board[row])):
             s += _stringifySquare(board[col][row])
-
         s += os.linesep
-
     s += '    a  b  c  d  e' + os.linesep
-
     return s
 
 def parseTestCase(path):
