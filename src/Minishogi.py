@@ -19,9 +19,7 @@ Illegal Moves:
 - Dropping a Pawn in a player's promotion zone or immediate checkmate
 - Dropping a Pawn onto in a column where the player has an unpromoted pawn
 """
-
-
-from utils import _stringifySquare, stringifyBoard, parseTestCase, loc_occupied, parse_location
+from utils import stringify_board, stringify_captures, parse_test_case
 from player import Player
 import sys
 import os
@@ -51,9 +49,9 @@ def dispatch_turn(command, player, other, board):
 
 def game_state(board, upper_player, lower_player):
     # print board and players' captures
-    print(stringifyBoard(board))
-    print('Captures UPPER: {0}'.format(upper_player.stringify_captures()))
-    print('Captures lower: {0}\n'.format(lower_player.stringify_captures()))
+    print(stringify_board(board))
+    print('Captures UPPER: {0}'.format(stringify_captures(upper_player)))
+    print('Captures lower: {0}\n'.format(stringify_captures(lower_player)))
 
 def interactive_mode():
     """ 
@@ -102,7 +100,7 @@ def interactive_mode():
 
 
 def file_mode(path):
-    game = parseTestCase(path)
+    game = parse_test_case(path)
     board = [['','','','',''],['','','','',''],['','','','',''],['','','','',''],['','','','','']]
     lower_player = Player('lower', board)
     upper_player = Player('UPPER', board)

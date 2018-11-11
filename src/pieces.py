@@ -1,5 +1,4 @@
 from utils import parse_location, coor_to_location
-from functools import partial
 
 class Piece:
     def __init__(self, player):
