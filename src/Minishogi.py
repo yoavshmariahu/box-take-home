@@ -1,5 +1,8 @@
 """
-MiniShogi Game
+@author Yoav Shmariahu
+@date   11-11-18
+
+Box Internship Assignment: MiniShogi - Japanese Chess Variant
 
 Objective: capture the other player's king
 
@@ -100,6 +103,9 @@ def interactive_mode():
 
 
 def file_mode(path):
+    """
+    File Mode
+    """
     game = parse_test_case(path)
     board = [['','','','',''],['','','','',''],['','','','',''],['','','','',''],['','','','','']]
     lower_player = Player('lower', board)
@@ -153,7 +159,9 @@ def file_mode(path):
         print('Tie game.  Too many moves.')
 
 def main():
-    # Dispatch program according to flags
+    """
+    Dispatch program according to flags
+    """
     if sys.argv[1] == '-i':
         interactive_mode()
     elif sys.argv[1] == '-f':
